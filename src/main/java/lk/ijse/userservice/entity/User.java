@@ -20,7 +20,7 @@ public class User {
     private String email;
 
     @NotBlank
-    private String password;   // plain for simplicity (adding BCrypt later)
+    private String password;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
