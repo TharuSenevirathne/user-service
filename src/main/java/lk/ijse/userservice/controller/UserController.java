@@ -3,8 +3,8 @@ package lk.ijse.userservice.controller;
 import jakarta.validation.Valid;
 import lk.ijse.userservice.dto.UserRequest;
 import lk.ijse.userservice.dto.UserResponse;
-import lk.ijse.userservice.entity.User;
 import lk.ijse.userservice.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,43 +21,65 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.register(user));
+    // CREATE
+    @PostMapping
+    public ResponseEntity<UserResponse> createUser(
+            @Valid @RequestBody UserRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.createUser(request));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody User loginRequest) {
-        return userService.findByEmail(loginRequest.getEmail())
-                .filter(u -> u.getPassword().equals(loginRequest.getPassword()))
-                .map(u -> ResponseEntity.ok(UserResponse.fromEntity(u)))
-                .orElseGet(() -> ResponseEntity.status(401).build());
-    }
-
+    // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUser(
+            @PathVariable Long id) {
+
         return userService.findById(id)
-                .map(UserResponse::fromEntity)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() ->
+                        ResponseEntity.notFound().build()
+                );
     }
 
+    // GET ALL
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+
+        return ResponseEntity.ok(
+                userService.getAllUsers()
+        );
     }
 
+    // SEARCH
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> searchUsers(
+            @RequestParam String keyword) {
+
+        return ResponseEntity.ok(
+                userService.searchUsers(keyword)
+        );
+    }
+
+    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserRequest request) {
-        return ResponseEntity.ok(userService.updateUser(id, request));
+
+        return ResponseEntity.ok(
+                userService.updateUser(id, request)
+        );
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long id) {
 
+        userService.deleteUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

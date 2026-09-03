@@ -8,12 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    UserResponse register(User user);
-    Optional<User> findByEmail(String email);
-    Optional<User> findById(Long id);
-    UserResponse getUserByUsername(String username);
-    UserResponse getUserById(Long id);
+    UserResponse createUser(UserRequest request);
+    Optional<UserResponse> findById(Long id);
     List<UserResponse> getAllUsers();
+    List<UserResponse> searchUsers(String keyword);
     UserResponse updateUser(Long id, UserRequest request);
     void deleteUser(Long id);
 }
